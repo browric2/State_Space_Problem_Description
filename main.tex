@@ -22,6 +22,7 @@
 \documentclass[10pt, a4paper, twocolumn]{article} % 10pt font size (11 and 12 also possible), A4 paper (letterpaper for US letter) and two column layout (remove for one column)
 
 \input{structure.tex} % Specifies the document structure and loads requires packages
+\usepackage{url}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE INFORMATION
@@ -54,7 +55,7 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
-\lettrineabstract{This document aims to give a general overview of the problem of intelligent ferromagnetic detection, especially pertaining to the Metrasens product “Skout”, a passive ferromagnetic security screening device. An attempt is made to formulate a simplified version of this problem in the language of state space models, and a roadmap outlining further improvements to this simplified approach is given.}
+\lettrineabstract{This document aims to give a general overview of the problem of intelligent ferromagnetic detection, especially as it relates to the Metrasens product “Skout”, a passive ferromagnetic security screening device. An attempt is made to formulate a simplified version of this problem in the language of state space models, and a roadmap outlining further improvements to this simplified approach is given.}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -64,107 +65,145 @@
 
 Metrasens are developing a new class of ferromagnetic detection systems to provide greater capability in several markets, with urban security being a particular target. This new generation of systems is designed to not only detect the presence of ferromagnetic objects, but to discriminate threat items from benign objects carried by the general population: for example, a perfect system should ignore a mobile phone but raise an alarm for an assault rifle. The wide range of benign ferrous items carried day-to-day by the populace, in combination with the complex and varied nature of the potential threat items, make this a considerably difficult problem. In the simplest case, in which passive magnetometers are used to record the intrinsic ferromagnetic signature of the traversing items, there is a limited amount of information available to make this classification. Advanced signal processing and machine learning techniques are therefore being researched to enhance the performance to a satisfactory level, and it is believed that sequential Bayesian estimation techniques may a powerful technique to apply to this problem.
 
-Though in principle these techniques might be applied to any of the new technologies in development, this project will focus on applying to these methods upcoming product named Skout. This technology utilises a set of magnetometers to measure the magnetic field (“B-field”) passively produced by traversing ferrous objects. These can be measured over a window of time to produce a multivariate time-series (MTS), which is the basic data format to be input to an algorithm.
+Though in principle these techniques might be applied to any of the new technologies in development, this project will focus on applying to these methods to the upcoming product named Skout. This technology utilises a set of magnetometers to measure the magnetic field (“B-field”) passively produced by traversing ferrous objects. These can be measured over a window of time to produce a multivariate time-series (MTS), which is the basic data format which needs to be processed by a detection algorithm.
 
-The basic idea for classification has been to “fit” the input MTS to a physical model, giving an intuitive, interpretable set of model parameters. These parameters can then be used to make a detection decision, likely strongly incorporating anomaly/outlier detection due to the unpredictable nature of the threat set and difficulty in collecting threat data. Including an intermediary space with interpretable parameters is believed to be crucial: only small datasets are able to be obtained, with potential heavy systematic bias in the threat sets especially, meaning that automatically learned or statistical features could be highly unreliable. Physical features help mitigate this, in theory, as only features which are intrinsic to the objects themselves (such as moment strength and object length) are sent to the classifier, and poorly understood abstract features are avoided.
+The basic idea for classification has been to “fit” the input MTS to a physical model, giving an intuitive, interpretable set of model parameters. These parameters can then be used to make a detection decision, likely strongly incorporating anomaly/outlier detection due to the unpredictable nature of the threat set and the inherent difficulty of collecting large quantities of high-quality threat data. Including an intermediary space with interpretable parameters is believed to be crucial: only small datasets are able to be obtained, with potential heavy systematic bias in the threat sets especially, meaning that automatically learned or statistical features could be highly unreliable. Physical features help mitigate this, in theory, as only features which are intrinsic to the objects themselves (such as moment strength and object length) are sent to the classifier, and poorly understood abstract features are avoided.
 
 The fitting step is currently being performed using the Levenberg-Marquardt technique to perform a nonlinear least squares optimisation, minimising the residuals between the recorded MTS and a simulated traversal with a given set of model parameters. Although the global minimum of the objective function is typically being located correctly, this approach has a number of inherent shortcomings, which motivates the search for an improved inversion technique.
 
 
-\begin{align}
-	A = 
-	\begin{bmatrix}
-		A_{11} & A_{21} \\
-		A_{21} & A_{22}
-	\end{bmatrix}
-\end{align}
+%------------------------------------------------
 
+\section{Skout System}
+
+This technology consists of a set of modular pillars which surround a walkthrough channel. Each pillar contains six triaxial magnetometers, each capable of capturing a full three-dimensional measurement of the magnetic field (“B-field”) at a point in space. A window of data is recorded from the sensors over a range of samples, and a detection decision is made on this data: if the traversing object/objects are considered to be a threat, an alarm is raised.
 
 %------------------------------------------------
 
-\subsection{Subsection}
+\section{Raw Data format}
 
-Nam ante risus, tempor nec lacus ac, congue pretium dui. Donec a nisl est. Integer accumsan mauris eu ex venenatis mollis. Aliquam sit amet ipsum laoreet, mollis sem sit amet, pellentesque quam. Aenean auctor diam eget erat venenatis laoreet. In ipsum felis, tristique eu efficitur at, maximus ac urna. Aenean pulvinar eu lorem eget suscipit. Aliquam et lorem erat. Nam fringilla ante risus, eget convallis nunc pellentesque non. Donec ipsum nisl, consectetur in magna eu, hendrerit pulvinar orci. Mauris porta convallis neque, non viverra urna pulvinar ac. Cras non condimentum lectus. Aliquam odio leo, aliquet vitae tellus nec, imperdiet lacinia turpis. Nam ac lectus imperdiet, luctus nibh a, feugiat urna.
-
-\begin{itemize}
-	\item First item in a list 
-	\item Second item in a list 
-	\item Third item in a list
-\end{itemize}
-
-Nunc egestas quis leo sed efficitur. Donec placerat, dui vel bibendum bibendum, tortor ligula auctor elit, aliquet pulvinar leo ante nec tellus. Praesent at vulputate libero, sit amet elementum magna. Pellentesque sodales odio eu ex interdum molestie. Suspendisse lacinia, augue quis interdum posuere, dolor ipsum euismod turpis, sed viverra nibh velit eget dolor. Curabitur consectetur tempus lacus, sit amet luctus mauris interdum vel. Curabitur vehicula convallis felis, eget mattis justo rhoncus eget. Pellentesque et semper lectus.
-
-\begin{description}
-	\item[First] This is the first item
-	\item[Last] This is the last item
-\end{description}
-
-Donec nec nibh sagittis, finibus mauris quis, laoreet augue. Maecenas aliquam sem nunc, vel semper urna hendrerit nec. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas pellentesque dolor lacus, sit amet pretium felis vestibulum finibus. Duis tincidunt sapien faucibus nisi vehicula tincidunt. Donec euismod suscipit ligula a tempor. Aenean a nulla sit amet magna ullamcorper condimentum. Fusce eu velit vitae libero varius condimentum at sed dui.
-
-%------------------------------------------------
-
-\subsection{Subsection}
-
-In hac habitasse platea dictumst. Etiam ac tortor fermentum, ultrices libero gravida, blandit metus. Vivamus sed convallis felis. Cras vel tortor sollicitudin, vestibulum nisi at, pretium justo. Curabitur placerat elit nunc, sed luctus ipsum auctor a. Nulla feugiat quam venenatis nulla imperdiet vulputate non faucibus lorem. Curabitur mollis diam non leo ullamcorper lacinia.
-
-Morbi iaculis posuere arcu, ut scelerisque sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris placerat urna id enim aliquet, non consequat leo imperdiet. Phasellus at nibh ut tortor hendrerit accumsan. Phasellus sollicitudin luctus sapien, feugiat facilisis risus consectetur eleifend. In quis luctus turpis. Nulla sed tellus libero. Pellentesque metus tortor, convallis at tellus quis, accumsan faucibus nulla. Fusce auctor eleifend volutpat. Maecenas vel faucibus enim. Donec venenatis congue congue. Integer sit amet quam ac est aliquam aliquet. Ut commodo justo sit amet convallis scelerisque.
-
-\begin{enumerate}
-	\item First numbered item in a list
-	\item Second numbered item in a list
-	\item Third numbered item in a list
-\end{enumerate}
-
-Aliquam elementum nulla at arcu finibus aliquet. Praesent congue ultrices nisl pretium posuere. Nunc vel nulla hendrerit, ultrices justo ut, ultrices sapien. Duis ut arcu at nunc pellentesque consectetur. Vestibulum eget nisl porta, ultricies orci eget, efficitur tellus. Maecenas rhoncus purus vel mauris tincidunt, et euismod nibh viverra. Mauris ultrices tellus quis ante lobortis gravida. Duis vulputate viverra erat, eu sollicitudin dui. Proin a iaculis massa. Nam at turpis in sem malesuada rhoncus. Aenean tempor risus dui, et ultrices nulla rutrum ut. Nam commodo fermentum purus, eget mattis odio fringilla at. Etiam congue et ipsum sed feugiat. Morbi euismod ut purus et tempus. Etiam est ligula, aliquam eget porttitor ut, auctor in risus. Curabitur at urna id dui lobortis pellentesque.
-
-\begin{table}
-	\caption{Example table}
-	\centering
-	\begin{tabular}{llr}
-		\toprule
-		\multicolumn{2}{c}{Name} \\
-		\cmidrule(r){1-2}
-		First Name & Last Name & Grade \\
-		\midrule
-		John & Doe & $7.5$ \\
-		Richard & Miles & $5$ \\
-		\bottomrule
-	\end{tabular}
-\end{table}
-
-%------------------------------------------------
-
-\section{Section}
+A Skout pillar contains six triaxial magnetometers, resulting in 18 signals per pillar (x, y, z field components are from each triaxial set are recorded separately). A channel is bordered by two pillars, so 36 magnetometer signals are recorded for a given traversal through the system. The sensors are sampled at a constant rate of 12.2 Hz, producing a 36-dimensional MTS. Currently we are considering time windows with a length of twenty samples, though this is not set in stone\footnote{This could be increased for the purposes of this investigation, but in practice there will be a fundamental limit: a window size too large will contain signals from the traversals before or after the pass in consideration.}; this produces an MTS of length 20 and width 36 (i.e. $x \in \mathbb{R}^{36\times20}$). A typical window of Skout data is shown in Figure \ref{Skout_ref_data}.
 
 \begin{figure}
-	\includegraphics[width=\linewidth]{bear.jpg} % Figure image
-	\caption{A majestic grizzly bear} % Figure caption
-	\label{bear} % Label for referencing with \ref{bear}
+	\includegraphics[width=\linewidth]{Figures/example_data.png} % Figure image
+	\caption{A typical example of a Skout recording. This is a 36-dimensional time series representing the B-field measured at each sensor throughout a traversal, in this case a member of the public passing through at Ashton Gate stadium.}
+	\label{Skout_ref_data}
 \end{figure}
 
-In hac habitasse platea dictumst. Vivamus eu finibus leo. Donec malesuada dui non sagittis auctor. Aenean condimentum eros metus. Nunc tempus id velit ut tempus. Quisque fermentum, nisl sit amet consectetur ornare, nunc leo luctus leo, vitae mattis odio augue id libero. Mauris quis lectus at ante scelerisque sollicitudin in eu nisi. Nulla elit lacus, ultricies eu erat congue, venenatis semper turpis. Ut nec venenatis velit. Mauris lacinia diam diam, ac egestas neque sodales sed. Curabitur eu diam nulla. Duis nec turpis finibus, commodo diam sed, bibendum erat. Nunc in velit ullamcorper, posuere libero a, mollis mauris. Nulla vehicula quam id tortor ornare blandit. Aenean maximus tempor orci ultrices placerat. Aenean condimentum magna vulputate erat mattis feugiat.
+%------------------------------------------------
 
-Quisque lacinia, purus id mattis gravida, sem enim fringilla erat, non dapibus est tellus pellentesque velit. Vivamus pretium sem quis leo placerat, at dignissim ex iaculis. Donec neque tortor, pharetra quis vestibulum id, tempus scelerisque mi. Cras in mattis est. Integer nec lorem rutrum, semper ligula bibendum, iaculis neque. Sed in nunc placerat, viverra dui in, fringilla sem. Sed quis rutrum magna, vitae pellentesque eros.
+\section{Physical Model}
 
-Praesent maximus mauris vitae nisl pulvinar, at tristique tortor aliquam. Etiam sit amet nunc in nulla vulputate sollicitudin. Aliquam erat volutpat. Praesent pharetra gravida cursus. Quisque vulputate lacus nunc. Integer orci ex, porttitor quis sapien id, eleifend gravida mi. Etiam efficitur justo eget nulla congue mattis. Duis commodo vel arcu a pretium. Aenean eleifend viverra nisl, nec ornare lacus rutrum in.
+In our current detection approach, the raw data window is “fitted” to a physical model, the parameters of which are used to make a detection decision. This model is a simplified representation of what might be occurring during the traversal, informed by the physics team's domain knowledge in magnetics. In this model, a ferromagnetic object producing an idealised magnetic field travels on a specified trajectory through the Skout channel, resulting in magnetic field measurements at the sensors which change over the course of the trajectory. The field pattern at the sensors for a given time sample is dependent on three things:
 
-Vivamus pulvinar ac eros eu pellentesque. Duis nibh felis, sagittis sed lacus at, sagittis mattis nisi. Fusce ante dui, tincidunt in scelerisque ut, sagittis at magna. Fusce tincidunt felis et odio tincidunt imperdiet. Cras ut facilisis nisl. Aliquam vitae consequat metus, eget gravida augue. In imperdiet justo quis nulla venenatis accumsan. Aliquam aliquet consectetur tortor, at sollicitudin sapien porta sed. Donec efficitur mauris id rhoncus volutpat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed bibendum purus dapibus tincidunt euismod. Nullam malesuada ultrices lacus, ut tincidunt dolor. Etiam imperdiet quam eget elit tincidunt scelerisque. Curabitur ut ullamcorper dui. Cras gravida porta leo, ut lobortis nisl venenatis pulvinar. Proin non semper nulla.
+\begin{enumerate}
+	\item \textbf{The relative position of the ferromagnetic object and the sensors}. The magnetic field surrounding objects drops off sharply with distance, so objects located far from the sensors will produce a weaker measurement.
+	
+	\item \textbf{The orientation of the ferromagnetic object}. The field pattern produced by physical objects is not spherically symmetric, therefore the orientation of the object as it is carried through will affect the resultant field.
+	
+	\item \textbf{The magnetic properties of the object}. A more strongly magnetised object will produce a greater field measurement at the sensors. For the point dipole model, this is parameterised by the moment strength, which is the magnitude of the moment vector. More complex magnetic models may include parameters defining the size or shape of the ferrous object.
+\end{enumerate}
 
-Praesent pretium nisl purus, id mollis nibh efficitur sed. Sed sit amet urna leo. Nulla sed imperdiet sem. Donec ut diam tristique, faucibus ligula vel, varius est. In ipsum ligula, elementum vitae velit ac, viverra tincidunt enim. Phasellus gravida diam id nisl interdum maximus. Ut semper, tortor vitae congue pharetra, justo odio commodo urna, vel tempus libero ex et risus. Vivamus commodo felis non venenatis rutrum. Sed pulvinar scelerisque augue in porta. Sed maximus libero nec tellus malesuada elementum. Proin non augue posuere, pellentesque felis viverra, varius urna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dignissim urna eget diam dictum, eget facilisis libero pulvinar.
+\section{Magnetic Models}
 
-Aliquam ex tellus, hendrerit sed odio sit amet, facilisis elementum enim. Suspendisse potenti. Integer molestie ac augue sit amet fermentum. Vivamus ultrices ante nulla, vitae venenatis ipsum ullamcorper sed. Phasellus gravida felis sapien, ac porta purus pharetra quis. Sed eget augue tellus. Nam vitae hendrerit arcu, id iaculis ipsum. Pellentesque sed magna tortor.
+The simplest model of a magnetic object is the “point dipole”, a field pattern equivalent to that which would be produced by an infinitely small current loop or bar magnet. It can be thought of as the field produced by two magnetic monopoles ("point charges") of equal and opposite charge, in the limit that the separation between them is reduced to zero (though it is worth noting that individual magnetic monopoles do not truly exist in nature). This field pattern has cylindrical symmetry, and can be defined completely by a “magnetic dipole moment” vector (often denoted $\mathbf{m}$ or $\boldsymbol{\mu}$) which describes both strength and orientation of the dipole. The B-field produced by a point dipole source is given by the following equation:
 
-In ac tempus diam. Sed nec lobortis massa, suscipit accumsan justo. Quisque porttitor, ligula a semper euismod, urna diam dictum sem, sed maximus risus purus sit amet felis. Fusce elementum maximus nisi a mattis. Nulla vitae elit erat. Integer sit amet commodo risus, eget elementum nulla. Donec ultricies erat sit amet sem commodo iaculis. Donec euismod volutpat lacus, ut tempor est lacinia a. Vivamus auctor condimentum tincidunt. Praesent sed finibus urna. Sed pellentesque blandit magna et rhoncus.
+\begin{equation}
+	{\mathbf{B} ({\mathbf{r} }) = {\frac{\mu_{0}}{4\pi}} \left[{\frac {3\mathbf{r} (\mathbf{m} \cdot \mathbf {r} )}{\lVert \mathbf{r} \rVert^{5}}}-{\frac {\mathbf {m} }{\lVert \mathbf{r} \rVert^{3}}} \right],}
+\end{equation}
 
-Integer vel turpis nec tellus sodales malesuada a vel odio. Fusce et lectus eu nibh rhoncus tempus vel nec elit. Suspendisse commodo orci velit, lacinia dictum odio accumsan et. Vivamus libero dui, elementum vel nibh non, fermentum venenatis risus. Aliquam sed sapien ac orci sodales tempus a eget dui. Morbi non dictum tortor, quis tincidunt nibh. Proin ut tincidunt odio.
+where $\mathbf{B}$ is the magnetic field vector, $\mathbf{r}$ is the displacement between the dipole and the point being measured, $\mu_0$ is the permeability of free space (a constant),  and $\mathbf{m}$ is the magnetic moment.
+The magnetic field produced by this model is plotted in Figure \ref{dipole_field}; further information can be found in !!! and !!! in the references.
 
-Pellentesque ac nisi dolor. Pellentesque maximus est arcu, eu scelerisque est rutrum vitae. Mauris ullamcorper vulputate vehicula. Praesent fermentum leo ac velit accumsan consectetur. Aliquam eleifend ex eros, ut lacinia tellus volutpat non. Pellentesque sit amet cursus diam. Maecenas elementum mattis est, in tincidunt ex pretium ac. Integer ultrices nunc rutrum, pretium sapien vitae, lobortis velit.
+\begin{figure}
+	\includegraphics[width=\linewidth]{Figures/dipole_field.png} % Figure image
+	\caption{Note: from !!!, see references. This figure plots the magnetic field surrounding a point dipole which is oriented upwards ($\mathbf{H}$ is directly proportional to $\mathbf{B}$).}
+	\label{dipole_field}
+\end{figure}
+
+
+A natural generalisation of this model is what we have termed the extended dipole. This consists of two magnetic monopoles with finite separation; as such, it is not strictly physical, but is a better approximation for extended ferrous objects which are not point-like in nature. This model can be described completely by a moment vector, as before, and the object “length” (i.e. the separation between the monopoles). This provides two parameters (the magnitude of the moment vector and the object length) describing the intrinsic magnetic properties of the object which can then be used for classification.
+
+More sophisticated magnetics models are under consideration to provide additional magnetics parameters for classification. If this project is successful, a natural next step might be to augment this process with these advanced magnetic models.
+
+\section{Current Levenberg-Marquardt Implementation}
+
+The current detection approach uses the Levenberg-Marquardt algorithm to fit a window of data to the physical model. The following assumptions are currently made: the object follows a straight line path, remains at a constant height (i.e. the velocity has no z-component), moves at a constant speed, and does not rotate along its trajectory. An extended dipole model is used for the magnetics due to the extra parameter it provides, although our implementation can handle the point dipole case too. Figure \ref{forward_model} gives a diagrammatic representation of this model.
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{Figures/forward_model.png} % Figure image
+	\caption{Model currently in use: An extended dipole, with magnetic moment strength $|\boldsymbol{\mu}|$, dipole vector components $\mu_x$, $\mu_y$, $\mu_z$, and dipole separation (“length”) $L$, traverses the channel with speed $|\mathbf{v}|$, velocity angle $v_q$, and time offset $t_0$, intersecting the sensing plane at a crossing point with dimensions $x$, $z$.}
+	\label{forward_model}
+\end{figure}
+
+The physical model provides a simulation of the magnetic field at the sensors recorded over the length of a window. The squared error between this simulation and the recorded data is used to define a cost function, which is highly nonlinear with no known analytic derivative. This is therefore a nonlinear optimisation problem, and the Levenberg-Marquardt algorithm is used to find the global minimum. Sixty start-points carefully chosen across the parameter space are used to ensure the located minimum is the global rather than local minimum – in practice, this has proven to be robust for our problem, and the global minimum is typically found.
+
+\section{Weaknesses of the Current Approach}
+
+Our implementation of the Levenberg-Marquardt algorithm works as intended: the global minimum of the cost function is located. The shortcomings arise due to the inherent limitations with formulating the problem in this manner. In particular:
+
+\begin{itemize}
+	\item The current problem formulation contains very strong assumptions about the traversal trajectory: straight line, constant velocity, no orientation changes, etc. This is clearly a big oversimplification, as objects carried by human beings during a typical walkthrough will have many accelerations and deviations in the trajectory. It is also incapable of dealing with sloped surfaces and stoppages.
+	
+	\item There is no easy way to include prior information about the distribution of the model parameters. Currently this is being done by editing the cost function to impose sensible limits on the fitted parameters, but this is clunky and ignores detailed information about the  prior distributions that is already known.
+	
+	\item The end result of the fit is a point estimate of the optimum model parameters. A probability distribution over the model parameters would provide greater interpretability and more information to send to the classifier [A full distribution over the model parameters would incorporate very nicely into our current anomaly detection approach.].
+\end{itemize}
+
+It is possible that the trajectory errors might be diminished by adopting a sequential fitting approach with Lev-Mar, however for many samples there is not enough information to get a reliable fit in a noisy environment. In addition, the strong correlations between samples is ignored with this approach, and information from the fit of one sample can not easily be utilised to influence the fit of the next. For this reason, we are hopeful that a sequential Bayesian approach might overcome the inherent shortcoming of our current fitting technique.
+
+\section{State Space Formulation}
+
+Our problem can be described well in the language of state space models. We have a hidden state, which describes the magnetic properties, orientation, position, and velocity of the object at a given time sample, and a transition model, which updates the position of the object between samples and is a function of the state. The measurement model is given by the sensor B-field measurements at each position in the pillar, and is again a function of the state.
+
+To demonstrate a proof of principle with this approach, it might be best to avoid excess complexity at first. A good place to start might therefore be with a point dipole, straight line trajectory model. In this case, our problem might be formulated like this:
+
+State:
+
+Transition model:
+
+Measurement model:
+
+The measurement model is clearly nonlinear, and will become even more complex if a more sophisticated magnetic model is used. The prior distributions for the model parameters are not necessarily Gaussian, for example, the measured benign moments appear to more closely match a lognormal distribution, and multiple modes are a possibility. Consequently, a simple Kalman filter is insufficient for our problem. We are also somewhat computationally constrained, as any solution will eventually have to run in real-time on embedded hardware. The AKKF method therefore appears a promising fit for our purposes.
+
+It is important to note that the critical model parameter that needs to be estimated is the moment strength (along with any other parameters describing the intrinsic magnetic properties in more complex magnetic models), as this is what the detection decision will be based on. In the simplest case, this is constant along the trajectory, and so there is no requirement to perform any kind of real-time tracking. A full window of data can therefore be used to perform the parameter estimation, making this a smoothing problem rather than a filtering problem using the terminology defined by [!!!]. As only a small subset of the state parameters are necessary for classification, the other parameters might then be marginalised out (though in this case, it would be useful to store these distributions prior to the marginalisation, as they have scientific utility separate from their usefulness in classification).
+
+\section{Data}
+
+Metrasens can provide a great deal of data to assist with this project. We have working simulators in Matlab and Python, covering a range of models, which can be used to provide simulated data to verify the implementation with a known ground truth. The real test for this method, however, will be its performance on genuine data recorded by the Skout system.
+
+These recordings could cover a range of scenarios. We can record controlled traversals, using test objects with known magnetic properties, constrained to accurate straight-line traversals using a non-magnetic trolley system. We can also record data with more realistic trajectories to verify that we can cope with this scenario using more complex trajectory models. If the method is showing promise, we can evaluate its use on real Skout recordings taken during public screening data collection events. This is very messy and noisy data which is the gold standard for any detection algorithm we might try.
+
+\section{Adding Complexity}
+
+If we successfully verify the simple model described in [!!!!!!], we can think about adding complexity to our model to improve its performance on real datasets. There are many different forms this could take, some of which are listed below:
+
+\begin{itemize}
+	\item Advanced magnetic models: the point dipole model only provides one useful parameter for classifying the objects, which is the dipole moment strength. Experience tells us that this is not enough to successfully discriminate threat and benign objects. The current Lev-Mar implementation uses an extended dipole model, which provides and extra “length” parameter which can be sent to a classifier, so this would be a natural next step. More sophisticated magnetic models are under consideration, but are primarily in the research stage at the moment. See section [!!!!].
+	
+	\item Improved transition model: one of the major perceived strengths of this approach is its ability to handle more complex and unpredictable object trajectories. As such, it would be beneficial to add complexity to the transition model to move beyond straight-line, constant velocity trajectories. A good place to start might be the random accelerations model: [!!!!] Other augmentations, such as allowing the objects to rotate, may also add value.
+	
+\end{itemize}
+
+\section{Advanced Features}
+
+Comment about the advanced features goes here!!
+
+\begin{itemize}
+	\item Signal differences: One of the challenges passive detection systems face is dealing with magnetic interference from distant sources. Signals from distant objects have the characteristic that the “common-mode” component of the signal (that which appears on all sensors simultaneously) is much greater than the differences between signals. For this reason, we typically fit our models to the differences between signals rather than the raw signal itself, in effect using the system as a gradiometer. Replicating this process in the measurement model could considerably improve the performance in a real-world scenario.
+	
+	\item Multiple object models: an unfortunate reality when screening the public using this technology is that people often carry multiple ferrous objects, for example, someone might carry a phone in their pocket, whilst wearing headphones. In this scenario, a single object fit will produce unreliable results. Augmenting the state to describe multiple objects might therefore improve the quality of information sent to the classifier.
+	
+	\item Interference sources: Urban environments contain many sources of magnetic interference: traffic, subways, electrical equipment, nearby members of the public, to name just a few. Robustness against this type of interference could be critical in achieving the level of performance necessary for this technology to work effectively. It might be possible to change the model to include basic interference sources to combat this.
+	
+	\item Signal processing: The raw signals from the magnetometers are not used directly in the detection algorithm; some signal processing procedures are applied. The most important is probably the application of a high-pass filter, which removes drift in the sensors and offsets due to changes in the magnetic background. The filtering process also distorts the signals, however, which may lead to less accurate parameter estimation. It is proposed that this might be mitigated by incorporating the filtering process (or other preprocessing procedures) into the model: the state could contain extra parameters corresponding to the state of the filter at each timestep, and the measurement function would contain an extra procedure to apply the filtering process to the measured field.
+\end{itemize}
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
-\printbibliography[title={Bibliography}] % Print the bibliography, section title in curly brackets
+\printbibliography[title={References}] % Print the references, section title in curly brackets
 
 %----------------------------------------------------------------------------------------
 
