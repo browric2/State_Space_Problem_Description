@@ -95,7 +95,7 @@
 % Footers
 \lfoot{} % Left footer
 \cfoot{Commercial in Confidence $|$ \copyright \ Metrasens Ltd. 2022} % Center footer
-\rfoot{\footnotesize Page \thepage\ of \pageref{LastPage}} % Right footer, "Page 1 of 2"
+\rfoot{\footnotesize \textcolor{metdarkblue}{Page \thepage\ of \pageref*{LastPage}}} % Right footer, "Page 1 of 2"
 
 \fancypagestyle{firstpage}{ % Page style for the first page with the title
 	\fancyhf{}
@@ -159,8 +159,12 @@
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
-\usepackage[backend=bibtex,style=authoryear,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
+\usepackage[backend=bibtex,style=authoryear]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
 
 \addbibresource{references.bib} % The filename of the bibliography
 
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
+
+\usepackage{hyperref}
+
+\hypersetup{ colorlinks=true, linkcolor=metorange, filecolor=metorange, urlcolor=metblue, citecolor=metblue}

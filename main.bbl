@@ -17,7 +17,70 @@
 \endgroup
 
 \datalist[entry]{nyt/global//global/global}
-  \entry{Defining_Dipole}{misc}{}
+  \entry{Briers2009}{article}{}
+    \name{author}{3}{}{%
+      {{hash=BM}{%
+         family={Briers},
+         familyi={B\bibinitperiod},
+         given={Mark},
+         giveni={M\bibinitperiod},
+      }}%
+      {{hash=DA}{%
+         family={Doucet},
+         familyi={D\bibinitperiod},
+         given={Arnaud},
+         giveni={A\bibinitperiod},
+      }}%
+      {{hash=MS}{%
+         family={Maskell},
+         familyi={M\bibinitperiod},
+         given={Simon},
+         giveni={S\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{BMDAMS1}
+    \strng{fullhash}{BMDAMS1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelyear}{2009}
+    \field{labeldatesource}{}
+    \field{sortinit}{B}
+    \field{sortinithash}{B}
+    \field{abstract}{%
+    Two-filter smoothing is a principled approach for performing optimal
+  smoothing in non-linear non-Gaussian state--space models where the smoothing
+  distributions are computed through the combination of `forward' and
+  `backward' time filters. The `forward' filter is the standard Bayesian filter
+  but the `backward' filter, generally referred to as the backward information
+  filter, is not a probability measure on the space of the hidden Markov
+  process. In cases where the backward information filter can be computed in
+  closed form, this technical point is not important. However, for general
+  state--space models where there is no closed form expression, this prohibits
+  the use of flexible numerical techniques such as Sequential Monte Carlo (SMC)
+  to approximate the two-filter smoothing formula. We propose here a
+  generalised two-filter smoothing formula which only requires approximating
+  probability distributions and applies to any state--space model, removing the
+  need to make restrictive assumptions used in previous approaches to this
+  problem. SMC algorithms are developed to implement this generalised recursion
+  and we illustrate their performance on various problems.%
+    }
+    \verb{doi}
+    \verb 10.1007/s10463-009-0236-2
+    \endverb
+    \field{issn}{1572-9052}
+    \field{number}{1}
+    \field{pages}{61}
+    \field{title}{Smoothing algorithms for state--space models}
+    \verb{url}
+    \verb https://doi.org/10.1007/s10463-009-0236-2
+    \endverb
+    \field{volume}{62}
+    \field{journaltitle}{Annals of the Institute of Statistical Mathematics}
+    \field{year}{2009}
+    \warn{\item Invalid format of field 'month'}
+  \endentry
+
+  \entry{DefiningDipole}{misc}{}
     \field{labeltitlesource}{title}
     \field{labeldatesource}{nodate}
     \field{sortinit}{D}
@@ -27,17 +90,17 @@
     \field{title}{Defining the Magnetic Dipole}
   \endentry
 
-  \entry{HP_Dipole}{misc}{}
+  \entry{HPDipole}{misc}{}
     \field{labeltitlesource}{title}
     \field{labeldatesource}{nodate}
     \field{sortinit}{H}
     \field{sortinithash}{H}
   \field{howpublished}{\url{http://hyperphysics.phy-astr.gsu.edu/hbase/magnetic/magfie.html}}
     \field{note}{Accessed: 07-05-2022}
-    \field{title}{Hyperphysics_Dipole}
+    \field{title}{Hyperphysics Dipole}
   \endentry
 
-  \entry{Wiki_Dipole}{misc}{}
+  \entry{WikiDipole}{misc}{}
     \field{labeltitlesource}{title}
     \field{labeldatesource}{nodate}
     \field{sortinit}{W}

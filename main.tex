@@ -76,7 +76,15 @@ The fitting step is currently being performed using the Levenberg-Marquardt tech
 
 \section{Skout System}
 
-This technology consists of a set of modular pillars which surround a walkthrough channel. Each pillar contains six triaxial magnetometers, each capable of capturing a full three-dimensional measurement of the magnetic field (“B-field”) at a point in space. A window of data is recorded from the sensors over a range of samples, and a detection decision is made on this data: if the traversing object/objects are considered to be a threat, an alarm is raised.
+This technology consists of a set of modular bollards, which we have named "pillars". The intermediary space between pillars act as channels through which the members of the public may walk, with ferromagnetic security screening performed by the pillars.
+
+Each pillar contains six triaxial magnetometers, each capable of capturing a full three-dimensional measurement of the magnetic field (“B-field”) at a point in space. A window of data is recorded from the sensors over a range of samples, and a detection decision is made on this data: if the traversing object/s are considered to be a threat, an alarm is raised. A schematic of the Skout system\footnote{The version of this diagram used in previous correspondence incorrectly labelled the sensor separation as 15 cm; the diagram in this document is accurate.} is given in Figure \ref{Skout_schematic}.
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{Figures/Fixed_Skout_Schematic.png} % Figure image
+	\caption{A schematic diagram of the Skout system, showing all relevant dimensions.}
+	\label{Skout_schematic}
+\end{figure}
 
 %------------------------------------------------
 
@@ -105,6 +113,7 @@ In our current detection approach, the raw data window is “fitted” to a phys
 \end{enumerate}
 
 \section{Magnetic Models}
+\label{Mag_models}
 
 The simplest model of a magnetic object is the “point dipole”, a field pattern equivalent to that which would be produced by an infinitely small current loop or bar magnet. It can be thought of as the field produced by two magnetic monopoles ("point charges") of equal and opposite charge, in the limit that the separation between them is reduced to zero (though it is worth noting that individual magnetic monopoles do not truly exist in nature). This field pattern has cylindrical symmetry, and can be defined completely by a “magnetic dipole moment” vector (often denoted $\mathbf{m}$ or $\boldsymbol{\mu}$) which describes both strength and orientation of the dipole. The B-field produced by a point dipole source is given by the following equation:
 
@@ -113,11 +122,11 @@ The simplest model of a magnetic object is the “point dipole”, a field patte
 \end{equation}
 
 where $\mathbf{B}$ is the magnetic field vector, $\mathbf{r}$ is the displacement between the dipole and the point being measured, $\mu_0$ is the permeability of free space (a constant),  and $\mathbf{m}$ is the magnetic moment.
-The magnetic field produced by this model is plotted in Figure \ref{dipole_field}; further information can be found in !!! and !!! in the references.
+The magnetic field produced by this model is plotted in Figure \ref{dipole_field}; further information can be found in \parencite{WikiDipole} and \parencite{HPDipole} in the references.
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{Figures/dipole_field.png} % Figure image
-	\caption{Note: from !!!, see references. This figure plots the magnetic field surrounding a point dipole which is oriented upwards ($\mathbf{H}$ is directly proportional to $\mathbf{B}$).}
+	\caption{This figure plots the magnetic field surrounding a point dipole which is oriented upwards. $\mathbf{H}$ is another measure of magnetic field strength, and is directly proportional to $\mathbf{B}$). Note: this is an external figure, sourced from \parencite{DefiningDipole}.}
 	\label{dipole_field}
 \end{figure}
 
@@ -153,12 +162,20 @@ Our implementation of the Levenberg-Marquardt algorithm works as intended: the g
 It is possible that the trajectory errors might be diminished by adopting a sequential fitting approach with Lev-Mar, however for many samples there is not enough information to get a reliable fit in a noisy environment. In addition, the strong correlations between samples is ignored with this approach, and information from the fit of one sample can not easily be utilised to influence the fit of the next. For this reason, we are hopeful that a sequential Bayesian approach might overcome the inherent shortcoming of our current fitting technique.
 
 \section{State Space Formulation}
+\label{State_space}
 
 Our problem can be described well in the language of state space models. We have a hidden state, which describes the magnetic properties, orientation, position, and velocity of the object at a given time sample, and a transition model, which updates the position of the object between samples and is a function of the state. The measurement model is given by the sensor B-field measurements at each position in the pillar, and is again a function of the state.
 
-To demonstrate a proof of principle with this approach, it might be best to avoid excess complexity at first. A good place to start might therefore be with a point dipole, straight line trajectory model. In this case, our problem might be formulated like this:
+To demonstrate a proof of principle with this approach, it might be best to avoid excess complexity at first. A good place to start might therefore be with a point dipole, straight line trajectory model. In this case, our problem might be formulated like this\footnote{Many different notational conventions exist for the following parameters. An attempt has been made to standardise them in this document, consequently, there may be some differences with previous correspondence and cited materials.}:
 
 State:
+
+\begin{equation}
+	\mathbf{x}_t = (\lvert \mathbf{m} \rvert, m_\theta, m_\phi, p_x,
+	p_y, p_z, \dot p_x, \dot p_y)^T,
+\end{equation}
+
+where $\lvert \mathbf{m} \rvert$, $m_\theta$ and $m_\phi$ describe the moment vector in spherical coordinates; $p_x$, $p_y$ and $p_z$ are the x, y and z coordinates of the dipole; $\dot p_x$ and $\dot p_y$ are the x and y velocities of the dipole.
 
 Transition model:
 
@@ -166,7 +183,7 @@ Measurement model:
 
 The measurement model is clearly nonlinear, and will become even more complex if a more sophisticated magnetic model is used. The prior distributions for the model parameters are not necessarily Gaussian, for example, the measured benign moments appear to more closely match a lognormal distribution, and multiple modes are a possibility. Consequently, a simple Kalman filter is insufficient for our problem. We are also somewhat computationally constrained, as any solution will eventually have to run in real-time on embedded hardware. The AKKF method therefore appears a promising fit for our purposes.
 
-It is important to note that the critical model parameter that needs to be estimated is the moment strength (along with any other parameters describing the intrinsic magnetic properties in more complex magnetic models), as this is what the detection decision will be based on. In the simplest case, this is constant along the trajectory, and so there is no requirement to perform any kind of real-time tracking. A full window of data can therefore be used to perform the parameter estimation, making this a smoothing problem rather than a filtering problem using the terminology defined by [!!!]. As only a small subset of the state parameters are necessary for classification, the other parameters might then be marginalised out (though in this case, it would be useful to store these distributions prior to the marginalisation, as they have scientific utility separate from their usefulness in classification).
+It is important to note that the critical model parameter that needs to be estimated is the moment strength (along with any other parameters describing the intrinsic magnetic properties in more complex magnetic models), as this is what the detection decision will be based on. In the simplest case, this is constant along the trajectory, and so there is no requirement to perform any kind of real-time tracking. A full window of data can therefore be used to perform the parameter estimation, making this a smoothing problem rather than a filtering problem using the terminology defined by \parencite{Briers2009}. As only a small subset of the state parameters are necessary for classification, the other parameters might then be marginalised out (though in this case, it would be useful to store these distributions prior to the marginalisation, as they have scientific utility separate from their usefulness in classification).
 
 \section{Data}
 
@@ -176,10 +193,10 @@ These recordings could cover a range of scenarios. We can record controlled trav
 
 \section{Adding Complexity}
 
-If we successfully verify the simple model described in [!!!!!!], we can think about adding complexity to our model to improve its performance on real datasets. There are many different forms this could take, some of which are listed below:
+If we successfully verify the simple model described in Section \ref{State_space}, we can think about adding complexity to our model to improve its performance on real datasets. There are many different forms this could take, some of which are listed below:
 
 \begin{itemize}
-	\item Advanced magnetic models: the point dipole model only provides one useful parameter for classifying the objects, which is the dipole moment strength. Experience tells us that this is not enough to successfully discriminate threat and benign objects. The current Lev-Mar implementation uses an extended dipole model, which provides and extra “length” parameter which can be sent to a classifier, so this would be a natural next step. More sophisticated magnetic models are under consideration, but are primarily in the research stage at the moment. See section [!!!!].
+	\item Advanced magnetic models: the point dipole model only provides one useful parameter for classifying the objects, which is the dipole moment strength. Experience tells us that this is not enough to successfully discriminate threat and benign objects. The current Lev-Mar implementation uses an extended dipole model, which provides and extra “length” parameter which can be sent to a classifier, so this would be a natural next step. More sophisticated magnetic models are under consideration, but are primarily in the research stage at the moment. See Section \ref{Mag_models} for more details.
 	
 	\item Improved transition model: one of the major perceived strengths of this approach is its ability to handle more complex and unpredictable object trajectories. As such, it would be beneficial to add complexity to the transition model to move beyond straight-line, constant velocity trajectories. A good place to start might be the random accelerations model: [!!!!] Other augmentations, such as allowing the objects to rotate, may also add value.
 	
